@@ -1,0 +1,17 @@
+﻿@using DotNetEd.CoreAdmin
+@using Microsoft.Extensions.Localization
+@inject IEnumerable<DotNetEd.CoreAdmin.CoreAdminOptions> CoreAdminOptions;
+@inject IStringLocalizer<JsonLocalizer> _localizer
+@{
+    ViewData["Page_Title"] = "Home";
+    Layout = "_CoreAdminLayout";
+    var options = CoreAdminOptions.FirstOrDefault();
+}
+
+<div>
+    <h1 class="display-4">@options?.Title</h1>
+
+    
+</div>
+
+<p>@_localizer["AccessDatabaseEntries"]</p>

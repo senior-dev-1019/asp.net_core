@@ -1,0 +1,79 @@
+﻿@functions{
+
+    bool ShouldShow(Microsoft.AspNetCore.Mvc.ModelBinding.ModelMetadata metadata)
+    {
+        var shouldIgnore = ViewBag.IgnoreFromForm != null 
+            && ((IEnumerable<string>)ViewBag.IgnoreFromForm).Contains(metadata.PropertyName);
+
+        if (metadata.ShowForDisplay && metadata.ModelType.Name == "Byte[]" && !shouldIgnore)
+        {
+            return true;
+        }
+        
+        return metadata.ShowForDisplay
+            && !metadata.IsComplexType && !shouldIgnore;
+    } 
+    
+}
+@if (ViewData.TemplateInfo.TemplateDepth > 1)
+{
+    if (Model == null)
+    {
+        @ViewData.ModelMetadata.NullDisplayText 
+    
+    }
+    else
+    {
+        @ViewData.ModelMetadata.GetDisplayName()
+    }
+}
+else
+{
+    foreach (var prop in ViewData.ModelMetadata.Properties.Where(ShouldShow))
+    {
+        var relationships = (Dictionary<string, Dictionary<object, string>>)ViewBag.Relationships;
+
+        if (!relationships.Keys.Contains(prop.PropertyName))
+        {
+            <div class="form-group row">
+            @if (prop.HideSurroundingHtml)
+            {
+                @Html.Editor(prop.PropertyName) 
+            }
+            else if (!String.IsNullOrEmpty(Html.Label(prop.PropertyName).ToString()))
+            {
+
+                @Html.Label(prop.PropertyName, prop.DisplayName, new { @class = "col-md-2 col-form-label" })
+            }
+
+            <div class="col-md-10">
+                    @Html.Editor(prop.PropertyName)
+
+                    @Html.ValidationMessage(prop.PropertyName)
+                </div>
+            </div>
+        } 
+        else
+        {
+            <div class="form-group row">
+            @if (prop.HideSurroundingHtml)
+            {
+                @Html.DropDownList(prop.PropertyName, new SelectList(relationships[prop.PropertyName],"Key", "Value"), new {@class = "form-control"})
+            }
+            else if (!String.IsNullOrEmpty(Html.Label(prop.PropertyName).ToString()))
+            {
+
+                @Html.Label(prop.PropertyName, prop.DisplayName, new { @class = "col-md-2 col-form-label" })
+            }
+
+            <div class="col-md-10">
+                    @Html.DropDownList(prop.PropertyName, new SelectList(relationships[prop.PropertyName],"Key", "Value"), new {@class = "form-control"})
+
+                    @Html.ValidationMessage(prop.PropertyName)
+                </div>
+            </div>
+        }
+
+    }
+}
+

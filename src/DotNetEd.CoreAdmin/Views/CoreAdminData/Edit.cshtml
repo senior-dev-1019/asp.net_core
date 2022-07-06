@@ -1,0 +1,35 @@
+﻿@using DotNetEd.CoreAdmin
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<JsonLocalizer> _localizer
+@{
+    ViewData["Page_Title"] = ViewBag.DbSetName;
+    Layout = "_CoreAdminLayout";
+}
+
+<h1 class="display-4">@ViewBag.DbSetName - @_localizer["Edit"]</h1>
+
+
+@using (Html.BeginForm("EditEntityPost", 
+"CoreAdminData", 
+new { dbSetName = ViewBag.DbSetName, id = ViewBag.Id }, 
+FormMethod.Post, false,
+new { enctype = "multipart/form-data" }))
+{
+
+    @Html.Hidden("dbSetName", ViewBag.DbSetName, new { })
+    @Html.Hidden("id", ViewBag.Id, new { })
+
+    @Html.EditorForModel("DefaultEntity")
+
+    <div class="row">
+        <div class="col-md-12">
+            <button type="submit" class="btn btn-primary">@_localizer["Edit"]</button>
+            <p class="mt-2">
+            @Html.ActionLink(@_localizer["GoBack"], "Index", new { Id = ViewBag.DbSetName })
+            </p>
+        </div>
+    </div>
+
+
+}
+
